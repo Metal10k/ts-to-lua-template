@@ -24,6 +24,11 @@ gulp.task('clean-lua', function () {
 		.pipe(clean());
 });
 
+gulp.task('clean-dist', function () {
+	return gulp.src('dist/**/*.*', {read: false})
+		.pipe(clean());
+});
+
 gulp.task("ts", function(){
 	return gulp.src('src/**/*.ts')
     	.pipe(ts({
@@ -38,7 +43,18 @@ gulp.task("lua", shell.task(
 		return compilerPath + " " + path;// + " " + path.replace("src/", "bin/");
 	})
 	));
+	
+gulp.task("dist-lib", function(){
+	return gulp.src("node_modules/js-to-lua/colony-lib.lua")
+		.pipe(gulp.dest("dist"));
+});
 
-gulp.task("clean", ["clean-lua", "clean-js"]);
+gulp.task("dist-opt", function(){
+	return gulp.src("src/**/*.lua")
+		.pipe(gulp.dest("dist"));
+});
 
-gulp.task("default", gulpsync.sync(['clean', 'ts', 'lua']));
+gulp.task("clean", ["clean-lua", "clean-js", "clean-dist"]);
+gulp.task("dist", ["dist-lib", "dist-opt"]);
+
+gulp.task("default", gulpsync.sync(['clean', 'ts', 'lua', 'dist']));
